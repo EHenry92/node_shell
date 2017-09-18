@@ -1,4 +1,5 @@
 var fs = require('fs');
+var request = require('request');
 function pwd (str)   {
     process.stdout.write(process.argv[1]);
     process.stdout.write('\nprompt: ');
@@ -50,7 +51,7 @@ function head(str) {
 
 function tail(str) {
   fs.readFile(str, function read(err, data) {
-    if(err) {
+    if (err) {
       throw "error";
     } else {
       var lines = data.toString().split("\n");
@@ -62,5 +63,56 @@ function tail(str) {
   });
 
 }
+function sortIt(str) {
+  fs.readFile(str, function read(err, data)  {
+    if (err) {
+      throw 'error';
+    } else {
+      var lines = data.toString().split('\n');
+      var sorted = lines.sort();
+      process.stdout.write(sorted.join('\n'));
+    }
+    process.stdout.write('\nprompt: ');    
+  })
+  
+}
+function wc (str)  {
+  fs.readFile(str, function read(err, data)  {
+    if (err) {
+      throw 'error';
+    } else {
+      var lines = data.toString().split('\n');
+      process.stdout.write(lines.length.toString());
+    }
+    process.stdout.write('\nprompt: ');    
+  }) 
+}
+function uniq(str)  {
+  fs.readFile(str, function read(err, data)  {
+    if (err) {
+      throw 'error';
+    } else {
+      var lines = data.toString().split('\n');
+      var sorted = lines.sort();
 
-module.exports = {pwd, ls, date, echo, cat, head, tail};
+      for (let i = 0; i<sorted.length;i++) {
+        if (sorted[i] === sorted[i+1]) {
+          sorted.splice(i,1);
+          i--;
+        }
+      }
+      process.stdout.write(sorted.join('\n'));
+    }
+    process.stdout.write('\nprompt: ');    
+  })
+}
+function curl(str)  {
+  str = "http://" + str;
+  request(str, function (error, response, body) {
+    if(error) {throw 'error'}
+    process.stdout.write(body);
+    process.stdout.write('\nprompt: ');      
+    
+  });
+}
+module.exports = {pwd, ls, date, echo, cat, head, tail, sortIt,wc, uniq, curl};
