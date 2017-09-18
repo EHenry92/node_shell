@@ -1,93 +1,95 @@
 var fs = require('fs');
 var request = require('request');
-function pwd (str)   {
-    process.stdout.write(process.argv[1]);
-    process.stdout.write('\nprompt: ');
+function pwd (str, done)   {
+    done(process.cwd());
 }
-function date (str)    {
-    process.stdout.write(Date());
-    process.stdout.write('\nprompt: ');
+
+function date (str, done)    {
+    done(Date());
 }
-function ls (str)    {
+
+function ls (str, done)    {
+  var output = "";
     fs.readdir('.', function (err, files)   {
         if (err) {process.stdout.write('Error');}
         files.forEach(function(file)    {
-            process.stdout.write(file.toString() + '\n');
-        })
-        process.stdout.write('prompt: ');
+            output += file.toString() + '\n';
+        });
+        done(output);
     })
 }
-function echo(str)  {
-    process.stdout.write(str);
-    process.stdout.write('\nprompt: ');
+
+
+function echo(str, done)  {
+    done(str);
 }
 
-function cat(str) {
+function cat(str, done) {
   fs.readFile(str, function read(err, data) {
-    if(err) {
-      throw "error";
-    } else {
-      process.stdout.write(data);
+    if(err) { throw "error";}
+    else {
+      done(data);
     }
-    process.stdout.write('\nprompt: ');
   });
 
 }
 
-function head(str) {
+function head(str, done) {
+  var output = "";
   fs.readFile(str, function read(err, data) {
     if(err) {
       throw "error";
     } else {
       var lines = data.toString().split("\n");
       for(var i = 0; i < 5; i++) {
-        process.stdout.write(lines[i] + "\n");
+        output += lines[i] + "\n";
       }
+      done(output);
     }
-    process.stdout.write('\nprompt: ');
   });
 
 }
 
-function tail(str) {
+function tail(str, done) {
+  var output = "";
   fs.readFile(str, function read(err, data) {
     if (err) {
       throw "error";
     } else {
       var lines = data.toString().split("\n");
       for(var i = lines.length - 5; i < lines.length; i++) {
-        process.stdout.write(lines[i] + "\n");
+        output += lines[i] + "\n";
       }
+      done(output);
     }
-    process.stdout.write('\nprompt: ');
   });
 
 }
-function sortIt(str) {
+function sortIt(str, done) {
+  var output = "";
   fs.readFile(str, function read(err, data)  {
     if (err) {
       throw 'error';
     } else {
       var lines = data.toString().split('\n');
       var sorted = lines.sort();
-      process.stdout.write(sorted.join('\n'));
+      output += sorted.join('\n');
     }
-    process.stdout.write('\nprompt: ');    
+    done(output);
   })
-  
+
 }
-function wc (str)  {
+function wc (str, done)  {
   fs.readFile(str, function read(err, data)  {
     if (err) {
       throw 'error';
     } else {
       var lines = data.toString().split('\n');
-      process.stdout.write(lines.length.toString());
+      done(lines.length.toString());
     }
-    process.stdout.write('\nprompt: ');    
-  }) 
+  })
 }
-function uniq(str)  {
+function uniq(str, done)  {
   fs.readFile(str, function read(err, data)  {
     if (err) {
       throw 'error';
@@ -101,18 +103,16 @@ function uniq(str)  {
           i--;
         }
       }
-      process.stdout.write(sorted.join('\n'));
+      done(sorted.join('\n'));
     }
-    process.stdout.write('\nprompt: ');    
   })
 }
-function curl(str)  {
+function curl(str, done)  {
   str = "http://" + str;
   request(str, function (error, response, body) {
     if(error) {throw 'error'}
-    process.stdout.write(body);
-    process.stdout.write('\nprompt: ');      
-    
+    done(body);
   });
 }
-module.exports = {pwd, ls, date, echo, cat, head, tail, sortIt,wc, uniq, curl};
+
+module.exports = {pwd, ls, date, echo, cat, head, tail, sortIt, wc, uniq, curl};
