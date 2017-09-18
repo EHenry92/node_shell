@@ -1,30 +1,31 @@
 var fs = require('fs');
 var request = require('request');
-function pwd (stdin, str, done)   {
-    done(process.cwd());
+
+function pwd(stdin, str, done)   {
+  done(process.cwd());
 }
 
-function date (stdin, str, done)     {
-    done(Date());
+function date(stdin, str, done)     {
+  done(Date());
 }
 
-function ls (stdin, str, done)     {
+function ls(stdin, str, done)     {
   var output = "";
-    fs.readdir('.', function (err, files)   {
-        if (err) {process.stdout.write('Error');}
-        files.forEach(function(file)    {
-            output += file.toString() + '\n';
-        });
-        done(output);
-    })
+  fs.readdir('.', function (err, files)   {
+    if (err) {process.stdout.write('Error');}
+    files.forEach(function(file)    {
+      output += file.toString() + '\n';
+    });
+    done(output);
+  })
 }
 
 
-function echo (stdin, str, done)   {
-    done(str);
+function echo(stdin, str, done)   {
+  done(str);
 }
 
-function cat (stdin, str, done)  {
+function cat(stdin, str, done)  {
   if(stdin) {
     done(stdin);
   }
@@ -38,10 +39,9 @@ function cat (stdin, str, done)  {
   }
 }
 
-function head (stdin, str, done)  {
+function head(stdin, str, done)  {
   var output = "";
   if(stdin !== "") {
-    console.log("using stdin");
     var lines = stdin.split("\n");
     for(var i = 0; i < 5; i++) {
       output += lines[i] + "\n";
@@ -61,13 +61,9 @@ function head (stdin, str, done)  {
       }
     });
   }
- 
-
-  
-
 }
 
-function tail (stdin, str, done)  {
+function tail(stdin, str, done)  {
   var output = "";
   fs.readFile(str, function read(err, data) {
     if (err) {
@@ -82,7 +78,8 @@ function tail (stdin, str, done)  {
   });
 
 }
-function sortIt (stdin, str, done)  {
+
+function sortIt(stdin, str, done)  {
   var output = "";
   fs.readFile(str, function read(err, data)  {
     if (err) {
@@ -96,17 +93,25 @@ function sortIt (stdin, str, done)  {
   })
 
 }
-function wc (stdin, str, done)   {
-  fs.readFile(str, function read(err, data)  {
-    if (err) {
-      throw 'error';
-    } else {
-      var lines = data.toString().split('\n');
-      done(lines.length.toString());
-    }
-  })
+
+function wc(stdin, str, done)   {
+  if(stdin) {
+    var lines = stdin.split('\n');
+    done(lines.length.toString());
+
+  } else {
+    fs.readFile(str, function read(err, data)  {
+      if (err) {
+        throw 'error';
+      } else {
+        var lines = data.toString().split('\n');
+        done(lines.length.toString());
+      }
+    })
+  }
 }
-function uniq (stdin, str, done)   {
+
+function uniq(stdin, str, done)   {
   fs.readFile(str, function read(err, data)  {
     if (err) {
       throw 'error';
@@ -124,12 +129,14 @@ function uniq (stdin, str, done)   {
     }
   })
 }
-function curl (stdin, str, done)   {
+
+function curl(stdin, str, done)   {
   str = "http://" + str;
   request(str, function (error, response, body) {
     if(error) {throw 'error'}
     done(body);
   });
 }
+
 
 module.exports = {pwd, ls, date, echo, cat, head, tail, sortIt, wc, uniq, curl};
