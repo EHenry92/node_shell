@@ -1,25 +1,42 @@
 var command = require('./command.js')
 process.stdout.write('prompt: ');
+var cmd;
 
 process.stdin.on('data', function (data) {
-    var cmd = data.toString().trim().split(' ');
-    var rest = cmd.slice(1).join(' ');
+  cmds = data.toString().trim().split(/\s*\|\s*/g);
+  let stdin = "";
+  for(var i=0;i<cmds.length; i++) {
+    var comm = cmds.shift();
+    i--;
+    cmd = comm.substr(0, comm.indexOf(' '));
+    rest = comm.substr(comm.indexOf(" ") + 1);
+    if (cmd === 'pwd')  {command.pwd(stdin, rest, done);}
+    else if (cmd === 'ls')   {command.ls(stdin, rest, done);}
+    else if (cmd === 'date')    {command.date(stdin, rest, done);}
+    else if (cmd === 'echo')    {command.echo(stdin, rest, done);}
+    else if (cmd === 'cat') {command.cat(stdin, rest, done);}
+    else if (cmd === 'head') {command.head(stdin, rest, done);}
+    else if (cmd === 'tail') {command.tail(stdin, rest, done);}
+    else if (cmd === 'sort') {command.sortIt(stdin, rest, done);}
+    else if (cmd === 'wc') {command.wc(stdin, rest, done);}
+    else if (cmd === 'uniq') {command.uniq(stdin, rest, done);}
+    else if (cmd === 'curl') {command.curl(stdin, rest, done);}
+  }
 
-    if (cmd[0] === 'pwd')  {command.pwd(rest, done);}
-    else if (cmd[0] === 'ls')   {command.ls(rest, done);}
-    else if (cmd[0] === 'date')    {command.date(rest, done);}
-    else if (cmd[0] === 'echo')    {command.echo(rest, done);}
-    else if (cmd[0] === 'cat') {command.cat(rest, done);}
-    else if (cmd[0] === 'head') {command.head(rest, done);}
-    else if (cmd[0] === 'tail') {command.tail(rest, done);}
-    else if (cmd[0] === 'sort') {command.sortIt(rest, done);}
-    else if (cmd[0] === 'wc') {command.wc(rest, done);}
-    else if (cmd[0] === 'uniq') {command.uniq(rest, done);}
-    else if (cmd[0] === 'curl') {command.curl(rest, done);}
 });
 
-
 var done = function(output) {
-  process.stdout.write(output + "\n");
-  process.stdout.write('prompt: ');
+  if(cmds.length > 0) {
+    console.log("on to the next command");
+    stdin = output.toString();
+  } else {
+    console.log("printing it");
+    process.stdout.write(output);
+    process.stdout.write("\n" + "prompt: ");
+  }
+
+  
 }
+
+
+
